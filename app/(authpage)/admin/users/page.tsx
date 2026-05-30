@@ -1,8 +1,13 @@
+"use client"
 import React from 'react'
+import UserTable from './user-table'
 
 const Users = () => {
   return (
-    <div>Users</div>
+    <div>
+      <UserTable/>
+    </div>
+    
   )
 }
 
