@@ -22,6 +22,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import EditProducts from "./edit-product";
+import DeleteProducts from "./deleteProduct";
 
 const ProductTable = () => {
   const [products, setProducts] = useState([]);
@@ -117,18 +119,15 @@ const ProductTable = () => {
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        Edit
-                      </DropdownMenuItem>
+                     <DropdownMenuItem asChild>
+  <EditProducts product={product} />
+</DropdownMenuItem>
 
-                      <DropdownMenuItem>
-                        View
-                      </DropdownMenuItem>
 
                       <DropdownMenuSeparator />
 
-                      <DropdownMenuItem variant="destructive">
-                        Delete
+                      <DropdownMenuItem asChild >
+                       <DeleteProducts product={product}/>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
