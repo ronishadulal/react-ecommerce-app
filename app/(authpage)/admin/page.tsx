@@ -1,9 +1,93 @@
-import React from 'react'
+"use client"
 
-const Dashboard = () => {
+import { TrendingUp } from "lucide-react"
+import { Bar, BarChart, XAxis, YAxis } from "recharts"
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart"
+import { gql, useQuery } from "@apollo/client";
+
+const GET_CATEGORIES = gql`
+  query {
+    categories {
+      id
+      name
+    }
+  }
+`;
+export const description = "A horizontal bar chart"
+ 
+
+const chartConfig = {
+  products: {
+    label: "Products",
+    color: "var(--chart-1)",
+  },
+} satisfies ChartConfig
+
+export function ChartBarHorizontal() {
+  const { data, loading, error } = useQuery(GET_CATEGORIES);
+
+if (loading) return <div>Loading...</div>;
+if (error) return <div>Error...</div>;
+const chartData = data.categories.map((category: any) => ({
+  category: category.name,
+  products: category.products.length,
+}));
+
   return (
-    <div>Welcome to admin page</div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Bar Chart - Horizontal</CardTitle>
+        <CardDescription>January - June 2024</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer config={chartConfig}>
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            layout="vertical"
+            margin={{
+              left: -20,
+            }}
+          >
+            <XAxis type="number" dataKey="products" hide />
+            <YAxis
+              dataKey="category"
+              type="category"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              tickFormatter={(value) => value.slice(0, 3)}
+            />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Bar dataKey="category" fill="var(--color-products)" radius={5} />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
+        <div className="flex gap-2 leading-none font-medium">
+          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+        </div>
+        <div className="leading-none text-muted-foreground">
+          Showing total visitors for the last 6 months
+        </div>
+      </CardFooter>
+    </Card>
   )
 }
-
-export default Dashboard
