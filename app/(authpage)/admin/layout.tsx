@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </nav>
         <main className="flex-1 overflow-auto">
-          {children}
+         {children}
         </main>
       </div>
     </SidebarProvider>
