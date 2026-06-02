@@ -1,20 +1,34 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Label,
+} from "recharts";
 
 type Product = {
   id: number;
   price: number;
 };
 
-export default function PriceChart() {
-  const [data, setData] = useState<any[]>([]);
+export default function PriceDistributionChart() {
+  const [chartData, setChartData] = useState<
+    { range: string; count: number }[]
+  >([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("https://api.escuelajs.co/api/v1/products");
-      const products: Product[] = await res.json();
+    const fetchProducts = async () => {
+      const response = await fetch(
+        "https://api.escuelajs.co/api/v1/products"
+      );
+
+      const products: Product[] = await response.json();
 
       const ranges = {
         "0-20": 0,
@@ -24,17 +38,15 @@ export default function PriceChart() {
         "81+": 0,
       };
 
-      products.forEach((p) => {
-        const price = p.price;
-
-        if (price <= 20) ranges["0-20"]++;
-        else if (price <= 40) ranges["21-40"]++;
-        else if (price <= 60) ranges["41-60"]++;
-        else if (price <= 80) ranges["61-80"]++;
+      products.forEach((product) => {
+        if (product.price <= 20) ranges["0-20"]++;
+        else if (product.price <= 40) ranges["21-40"]++;
+        else if (product.price <= 60) ranges["41-60"]++;
+        else if (product.price <= 80) ranges["61-80"]++;
         else ranges["81+"]++;
       });
 
-      setData(
+      setChartData(
         Object.entries(ranges).map(([range, count]) => ({
           range,
           count,
@@ -42,15 +54,48 @@ export default function PriceChart() {
       );
     };
 
-    fetchData();
+    fetchProducts();
   }, []);
 
   return (
-    <BarChart width={600} height={300} data={data}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="range" />
-      <YAxis />
-      <Bar dataKey="count" fill="#8884d8" />
-    </BarChart>
+    <div className="rounded-xl border bg-card p-6">
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold">
+          Product Price Distribution
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Number of products within each price range
+        </p>
+      </div>
+
+      <ResponsiveContainer width="100%" height={350}>
+        <BarChart data={chartData}>
+          <CartesianGrid vertical={false} />
+
+          <XAxis dataKey="range">
+            <Label
+              value="Price Range ($)"
+              offset={-5}
+              position="insideBottom"
+            />
+          </XAxis>
+
+          <YAxis>
+            <Label
+              value="Number of Products"
+              angle={-90}
+              position="insideLeft"
+            />
+          </YAxis>
+
+          <Tooltip />
+
+          <Bar
+            dataKey="count"
+            radius={[6, 6, 0, 0]}
+          />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
